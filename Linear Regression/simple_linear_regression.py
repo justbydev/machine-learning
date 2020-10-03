@@ -59,11 +59,11 @@ def predict():
 def numerical_derivative(f, W, b):
   h=1e-4
   grad=np.zeros((1, 2))
-  w_fx1=error_function(float(W)+h, b)
-  w_fx2=error_function(float(W)-h, b)
+  w_fx1=f(float(W)+h, b)
+  w_fx2=f(float(W)-h, b)
   grad[0, 0]=(w_fx1-w_fx2)/(2*h)
-  b_fx1=error_function(W, float(b)+h)
-  b_fx2=error_function(W, float(b)-h)
+  b_fx1=f(W, float(b)+h)
+  b_fx2=f(W, float(b)-h)
   grad[0, 1]=(b_fx1-b_fx2)/(2*h)
   return grad
 
