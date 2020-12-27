@@ -1,0 +1,5 @@
+1. Image Preprocessing
+2. CNN
+3. RNN
+4. CTC
+5. training & prediction
