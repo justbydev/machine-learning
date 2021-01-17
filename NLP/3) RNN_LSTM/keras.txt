@@ -1,0 +1,7 @@
+simpleRNN(hidden_size, input_shape=(input_length(time_steps), input_dim))
+Embedding(vocab_size, embedding_size)
+->vocab_size는 해당 데이터의 총 단어의 수
+->embedding_size는 내가 지정하는 임베딩 벡터 수
+->인공 신경망이 문자를 인식하기 위해서는 수치화 시켜야 하고 이때, 정수 인코딩 등을 수행하는데
+   embedding vector로 지정하여 서로 유사성이 있는 단어들끼리의 관계를 나타내고 벡터 차원을 줄이기 위한 용도로 사용
+LSTM(hidden_size)
