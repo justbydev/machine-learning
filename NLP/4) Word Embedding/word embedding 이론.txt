@@ -1,0 +1,42 @@
+자연어 데이터를 인식하기 위해서는 수치화 시켜야 한다. 그래서 자연어 데이터를 벡터화 시킨다.
+그 방법 중에서 원 핫 인코딩을 사용하게 되지만 이 경우, 단어간의 유사도도 고려하지 않았으며, 
+학습하고자 하는 데이터 속 단어의 양이 너무 많게 되면 벡터 차원이 너무 커지게 되는 문제가 발생한다.
+->이를 해결하고자 나온 방법이 바로 워드 임베딩
+->대표적으로 Word2Vec 이 있으며 여기에는 CBOW, Skip-Gram 두가지 방식이 존재
+->CBOW는 중간단어를 주변단어들을 통해 예측해 벡터화 시키는 방법
+->Skip-Gram은 주변단어들을 중간단어들을 통해 예측해 벡터화 시키는 방법
+->Word2Vec은 결국 '비슷한 위치에서 등장하는 단어들은 비슷한 의미를 가진다'라는 가정을 가짐
+->이를 이용하여 단어간의 유사도를 측정하여 단어들을 벡터화 시키는 방법
+->from gensim.models import Word2Vec
+->model=Word2Vec(sentences=result, size=100, window=5, min_count=5, workers=4, sg=0)
+=>sentences는 분석할 대상
+=>size는 임베딩 된 벡터의 차원
+=>window는 컨텍스트 윈도우 크기, 즉, window는 단어 유사도를 파악할 거리
+=>min_count는 단어 최소 빈도수 제한(빈도가 적은 단어들은 학습하지 않는다)
+=>workers는 학습을 위한 프로세스 수
+=>sg=0은 CBOW, 1은 Skip-gram
+
+이후, 카운트 기반(DTM, TF-IDF와 같은)과 예측 기반(Word2Vec와 같은)의 단점을 보완하여 나온 GloVe 존재
+pip install glove_python
+from glove import Corpus, Glove
+corpus = Corpus() 
+corpus.fit(result, window=5)
+# 훈련 데이터로부터 GloVe에서 사용할 동시 등장 행렬 생성
+
+glove = Glove(no_components=100, learning_rate=0.05)
+glove.fit(corpus.matrix, epochs=20, no_threads=4, verbose=True)
+glove.add_dictionary(corpus.dictionary)
+# 학습에 이용할 쓰레드의 개수는 4로 설정, 에포크는 20.
+
+또한, RNN layer를 구성할 때, keras에서 제공하는 Embedding() 층을 구성하여 학습시키게 되는데
+만약, 학습 데이터가 충분하지 않다면 사전 훈련된 Word2Vec, Glove를 사용할 수 있다.
+
+또한, 추가적으로 ELMo라는 언어 모델이 있는데 이는 문맥을 파악한 임베딩을 하는 것으로 이 역시
+사전 훈련된 모델을 사용할 수 있다.
+->ELMo는 biLM으로 순방향, 역방향 RNN 모델을 둘다 이용하여 둘의 결과를 연결시킨 후, 가중치를 
+곱하고 이 가중치를 학습시켜서 하는 언어 모델이다.
+
+이러한 임베딩 벡터를 이용하여 문서 유사도, 추천 시스템 등에 활용될 수 있으며 이때, 위에서 언급했던
+임베딩 벡터를 이용하게 되면 문서 벡터를 만들 수 있고 문서에 존재하는 단어 벡터들의 평균을 구하여
+이를 활용하는 방법이 가장 간단하지만 효능 또한 좋은 방법 중 하나이다.
+->워드 임베딩의 평균 활용
