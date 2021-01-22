@@ -1,0 +1,60 @@
+참고자료: https://wikidocs.net/25042
+
+태깅 작업이란 개체명 인식(NER), 품사 태깅이 대표적으로 있습니다.
+개체명 인식이란, 주어진 텍스트의 단어들이 어떤 유형에 속하는지를 말합니다.
+예를 들어, 김개똥은 경복궁을 갔다 라는 문장이 있다면 김개똥을 이름, 경복궁을 장소 이런식으로 인식하는 걸 말합니다.
+
+개체명 인식을 할 때는 RNN의 다-대-다 작업을 사용하면서 Bidirectional RNN을 사용합니다.
+또한, 정확도를 높이기 위해 LSTM을 사용하게 됩니다. 또한, 가장 보편적인 방법은 BIO 방식입니다.
+BIO에서 B는 Begin, I는 Inside, O는 Outside로써, 
+특정 개체로 인식되는 단어 혹은 문자의 시작을 B로 나타내고
+B와 이어지는 하나의 개체를 I로 나타내며
+그 이외는 O로 나타냅니다.
+
+예를 들어 해리포터 보러 메가박스 가자 라는 문장이 있다면
+해 B-movie
+리 I-movie
+포 I-movie
+터 I-movie
+보 O
+러 O
+메 B-theater
+가 I-theater
+박 I-theater
+스 I-theater
+가 O
+자 O
+로 나타냅니다. 혹은 영어로써 단어로 나타낸다면
+John Bratain is going to the Mega Mega Box 라고 한다면
+John B-name
+Bratain I-name
+is O
+going O
+to O
+the O
+Mega B-theater
+Mega I-theater
+Box I-theater
+이런 식으로 합니다. 따라서, 입력이 문자으로 들어오고 그에 대한 라벨링 역시 각각 단어에 대해서
+적용되기 때문에 Bidirectional 을 사용하며 성능 향상을 위해 LSTM을 사용합니다.
+또한, 입/출력 모두 정수 인코딩을 실행하게 됩니다.
+따라서, 예시 모델은 다음과 같습니다.
+model = Sequential()
+model.add(Embedding(input_dim=vocab_size, output_dim=128, input_length=max_len, mask_zero=True))
+model.add(Bidirectional(LSTM(256, return_sequences=True)))
+model.add(TimeDistributed(Dense(tag_size, activation='softmax')))
+보면 Embedding() 층은 당연히 존재하며 Bidirectional(LSTM())을 사용하고 
+LSTM 내부에 return_sequences=True를 통해 다-대-다 RNN임을 나타냈습니다.
+
+그런데, 예를 들어 I는 반드시 B 다음으로 와야 하고 서로 다른 개체의 I가 연속으로 오면 안되는 등의
+지켜져야 할 규칙이 정해지는데 이것이 지켜지지 않는다면 정확한 결과라고 할 수 없습니다.
+따라서, 이러한 출력 레이블에 대한 양방향 문맥을 반영하기 위해 CRF(Conditional Random Field) 를 추가합니다.
+
+model = Sequential()
+model.add(Embedding(input_dim=vocab_size, output_dim=20, input_length=max_len, mask_zero=True))
+model.add(Bidirectional(LSTM(units=50, return_sequences=True, recurrent_dropout=0.1)))
+model.add(TimeDistributed(Dense(50, activation="relu")))
+crf = CRF(tag_size)
+model.add(crf)
+
+이렇게 CRF까지 추가하여 근래의 개체명 인식(NER)은 양방향 LSTM+CRF 구조로 이루어집니다.
