@@ -1,0 +1,39 @@
+encoder_input: encoder에 들어가는 질문 데이터
+decoder_input: decoder에 들어가는, <sos>가 들어간 훈련용 대답 데이터
+decoder_output: decoder의 실제값, <eos>가 들어간 훈련용 대답 데이터
+embedding_dim: 임베딩 벡터 차원
+lstm_hidden_dim: LSTM 히든 셀 차원
+vocab_size: 질의 응답의 총 단어 수
+
+------------훈련 모델 인코더-----------------
+encoder_inputs: encoder의 input
+encoder_outputs: LSTM까지 거친 후의 output
+encoder_states=[state_h, state_c]: encoder 거친 후 의미 포함된 context vector
+
+------------훈련 모델 디코더-----------------
+decoder_inputs: decoder의 input
+decoder_outputs: 훈련 모델 decoder Dense(softmax)까지 거친 최종 outputs
+이때 initial_state는 훈련 모델 인코더의 encoder_states(context vector)
+
+------------훈련 모델-------------------------
+model=Model([encoder_inputs, decoder_inputs], decoder_outputs)
+
+------------예측 모델 디코더------------------
+decoder_states_inputs=[decoder_state_input_h, decoder_state_input_c]
+->예측 모델에서는 시점마다 이전 시점의 값이 들어가야 하고 LSTM은 두개의 셀 상태가 나오기 때문에
+   이렇게 decoder_states_inputs로 설정
+
+decoder_outputs2, state_h2, state_c2=decoder_predict_lstm(decoder_masking,
+                                   initial_state=decoder_states_inputs)
+decoder_states2=[state_h2, state_c2]
+이때 initial_state는 decoder_states_inputs로 이전 시점의 셀 상태가 들어감
+decoder_outputs: 예측 모델 decoder Dense(softmax)까지 거친 최종 outputs
+
+------------인코더 예측 모델------------
+encoder_model = Model(encoder_inputs, encoder_states)
+
+------------디코더 예측 모델-----------------------
+decoder_model=Model(
+    [decoder_inputs]+decoder_states_inputs,
+    [decoder_outputs2]+decoder_states2)
+
