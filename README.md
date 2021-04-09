@@ -26,4 +26,4 @@
 3) Bayes Classification
 4) Linear Regression & Logistic Regression
 5) Decision Tree
-진행중
+6) 진행중...
