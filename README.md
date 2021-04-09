@@ -19,3 +19,11 @@
    아이디어: 판결문 요약, 해석 및 유사 판례 제공 어플리케이션<br>
    본인 담당 개발: 안드로이드 어플리케이션, TF-IDF 활용 키워드 추출 및 유사 판례 제공<br>
    결과: 입상
+   
+## 기초 머신러닝 수업
+1) Perceptron Linear Classifier
+2) Support Vector Machine
+3) Bayes Classification
+4) Linear Regression & Logistic Regression
+5) Decision Tree
+진행중
