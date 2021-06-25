@@ -26,4 +26,9 @@
 3) Bayes Classification
 4) Linear Regression & Logistic Regression
 5) Decision Tree
-6) 진행중...
+6) KNN
+7) Clustering(K-means, Mixture of Gaussian, Specular clustering, Bottom-up, Top-down)
+8) DNN
+9) CNN
+10) Ensemble Learning(Bagging, Boosting, Random Forest)
+11) Reinforcement(Markov Decision Process)
